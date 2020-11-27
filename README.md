@@ -1,5 +1,6 @@
 # Data-Structure-and-Algorithm
-Try to understand how to use hashset and hashmap in different settings by solving leetcode questions
+Try to understand how to use hashset and hashmap in different settings by solving leetcode questions.
+
 Hash Table:
 What is the principle of hash table?
 The key idea of hash table is to use a hash function to map keys to buckets.
