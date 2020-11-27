@@ -1,3 +1,159 @@
+Leetcode 249: 
+Given an array of strings (all lowercase letters), the task is to group them in such a way that all strings in a group are shifted versions of each other. Two string S and T are called shifted if, 
+S.length = T.length 
+and
+S[i] = T[i] + K for 
+1 <= i <= S.length  for a constant integer K
+For example strings, {acd, dfg, wyz, yab, mop} are shifted versions of each other.
+Input  : str[] = {"acd", "dfg", "wyz", "yab", "mop",
+                 "bdfh", "a", "x", "moqs"};
+Output : a x
+         acd dfg wyz yab mop
+         bdfh moqs
+All shifted strings are grouped together.
+Intuition:
+We can see a pattern among the string of one group, the difference between consecutive characters for all character of the string are equal. As in the above example take acd, dfg and mop
+a c d -> 2 1 
+d f g -> 2 1 
+m o p -> 2 1
+Since the differences are the same, we can use this to identify strings that belong to the same group. The idea is to form a string of differences as key. If a string with the same difference string is found, then this string also belongs to the same group. For example, the above three strings have the same difference string, which is “21”. 
+In the below implementation, we add ‘a’ to every difference and store 21 as “ba”.
+Python 3 Solution:
+
+# Python3 program to print groups 
+# of shifted strings together.
+
+# Total lowercase letter 
+ALPHA = 26
+
+# Method to a difference string 
+# for a given string. If string 
+# is "adf" then difference string 
+# will be "cb" (first difference 
+# 3 then difference 2) 
+def getDiffString(str):
+
+	shift=""
+
+	for i in range(1, len(str)):
+		dif = (ord(str[i]) -
+			ord(str[i - 1]))
+
+		if(dif < 0):
+			dif += ALPHA
+
+		# Representing the difference 
+		# as char 
+		shift += chr(dif + ord('a'))
+
+	# This string will be 1 less 
+	# length than str 
+	return shift
+
+# Method for grouping 
+# shifted string 
+def groupShiftedString(str,n):
+
+	# map for storing indices 
+	# of string which are 
+	# in same group
+	groupMap = {}
+
+	for i in range(n):
+		diffStr = getDiffString(str[i])
+		if diffStr not in groupMap:
+			groupMap[diffStr] = [i]
+		else:
+			groupMap[diffStr].append(i)
+	
+	# Iterating through map 
+	# to print group 
+	for it in groupMap:
+		v = groupMap[it]
+		for i in range(len(v)):
+			print(str[v[i]], end = " ")
+		print()
+		
+# Driver code
+str = ["acd", "dfg", "wyz", 
+	"yab", "mop","bdfh", 
+	"a", "x", "moqs"]
+n = len(str)
+groupShiftedString(str, n)
+
+
+
+Java Solution:
+public class Solution {
+    public List<List<String>> groupStrings(String[] strings) {
+        Map<String,   List<String>> map = new HashMap<>();
+
+        for(String s : strings){
+            boolean added =false;
+            for(String k : map.keySet()){
+                if(k.length() != s.length()) continue;
+                if(isShift(k, s)){
+                    added = true;
+                    map.get(k).add(s);
+                }
+            }
+
+            if(!added){
+                List<String> l = new ArrayList<>();
+                l.add(s);
+                map.put(s, l);
+            }
+        }
+
+        return new ArrayList<List<String>>(map.values());
+    }
+
+    boolean isShift(String k, String s){
+        int prev = (26 + s.charAt(0) - k.charAt(0))%26;
+        for(int i=1; i< k.length(); i++){
+            int cur = (26 + s.charAt(i) - k.charAt(i))%26;
+            if(cur != prev) return false;
+            prev = cur;
+        }
+        return true;
+    }
+}
+
+
+public class Solution {
+    public List<List<String>> groupStrings(String[] strings) {
+        Map<String, List<String>> table = new HashMap<>();
+        for(String s : strings){
+            String key = getHashKey(s);
+            if(table.containsKey(key)){
+                table.get(key).add(s);
+            }else{
+                List<String> l = new ArrayList<>();
+                l.add(s);
+                table.put(key, l);
+            }
+        }
+        List<List<String>> result = new ArrayList<>();
+        for(Map.Entry e : table.entrySet()){
+            List<String> l = (List<String>)e.getValue();
+            Collections.sort(l);
+            result.add(l);
+        }
+        return result;
+    }
+
+    private String getHashKey(String s){
+        if(s.length() == 0) return "0";
+        StringBuilder sb = new StringBuilder();
+        for(int i=1; i< s.length();i++){
+            int diff =((s.charAt(i) - s.charAt(i-1)) + 26)%26;
+            sb.append(diff);
+        }
+        return sb.toString();
+    }
+}
+
+
 public class Solution {
     public List<List<String>> groupStrings(String[] strings) {
         Map<String,   List<String>> map = new HashMap<>();
@@ -26,5 +182,6 @@ public class Solution {
         return sb.toString();
     }
 }
+
 
 
